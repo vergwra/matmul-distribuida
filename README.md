@@ -1,80 +1,122 @@
-# 🚀 Multiplicação de Matrizes Distribuída
+# Multiplicação de Matrizes Distribuída
 
-Sistema de multiplicação de matrizes distribuída usando sockets TCP e threading em Python.
+Este projeto implementa um sistema de multiplicação de matrizes distribuída utilizando Sockets TCP em Python. O sistema é composto por um **Servidor** (Coordenador) e múltiplos **Clientes** (Trabalhadores).
 
-## 📊 Documentação
+## 📋 Pré-requisitos
 
-- **`OVERVIEW_PROJETO.md`** - Arquitetura completa e fluxo do sistema
-- **`METRICAS_DETALHADAS.md`** - Explicação das métricas de performance
-- **`GUIA_RAPIDO.md`** - Roteiro para apresentação
-- **`WORKFLOW_GRAFICOS.md`** - Como gerar gráficos com seus dados ⭐
+- Python 3.8 ou superior instalado.
+- Biblioteca `numpy` (opcional, usada apenas para geração de matrizes no utils, mas o código principal usa listas puras para fins didáticos. Se der erro de import, instale).
 
-## 🚀 Execução Rápida
+### Instalação das dependências
 
-### 1. Instalar dependências
+Abra o terminal na pasta raiz do projeto e execute:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Iniciar servidor
-```bash
+---
+
+## 🚀 Como Rodar
+
+> [!IMPORTANT]
+> **Todos os comandos abaixo devem ser executados de dentro da pasta `src`**.
+> Isso é necessário para que o Python encontre o pacote `matmul` corretamente.
+
+O projeto deve ser executado a partir da pasta `src` para que as importações funcionem corretamente.
+
+### Passo 1: Iniciar o Servidor
+
+O servidor agora aguarda a conexão de todos os clientes e depois entra em um **Modo Interativo**.
+
+**No Windows (Command Prompt ou PowerShell):**
+```powershell
+cd src
 python -m matmul.server.main --num-clients 2
-# Digite: 1000, 1000, 1000
 ```
 
-### 3. Iniciar clientes (em terminais separados)
+**No macOS / Linux:**
 ```bash
+cd src
+python3 -m matmul.server.main --num-clients 2
+```
+
+> **Nota:** O servidor ficará esperando até que o número exato de clientes (definido em `--num-clients`) se conecte.
+
+### Passo 2: Iniciar os Clientes
+
+Abra **novos terminais** (um para cada cliente) e execute o comando abaixo. Os clientes agora ficam rodando em loop, esperando tarefas.
+
+**No Windows:**
+```powershell
+cd src
 python -m matmul.client.main
-python -m matmul.client.main
 ```
 
-## 📊 Gerar Gráficos
-
-### Método Automático (Recomendado)
-
-1. **Salvar dados do teste:**
+**No macOS / Linux:**
 ```bash
-python save_test_data.py
-# Cole a saída completa do servidor
+cd src
+python3 -m matmul.client.main
 ```
 
-2. **Gerar gráficos:**
-```bash
-python generate_from_file.py
+### Passo 3: Executar Multiplicações (Menu)
+
+Após todos os clientes conectarem, o terminal do **Servidor** mostrará um menu:
+
+```text
+------------------------------
+ MENU PRINCIPAL
+------------------------------
+1. Nova Multiplicação
+2. Sair
+Escolha uma opção:
 ```
 
-### Resultado
-- `performance_analysis.png` - 6 gráficos comparativos
-- `breakdown_testN.png` - Decomposição detalhada
+1.  Digite `1` e pressione Enter.
+2.  Informe as dimensões das matrizes quando solicitado.
+3.  O servidor distribuirá o trabalho para os clientes já conectados.
+4.  Ao final, você verá os resultados e o menu aparecerá novamente.
+5.  Você pode rodar quantos testes quiser sem precisar reiniciar os clientes!
 
-## 🎯 Métricas Mostradas
+---
 
-- ⏱️ Tempo sequencial vs distribuído
-- 🚀 Speedup (quantas vezes mais rápido)
-- 📈 Eficiência do paralelismo
-- 📊 Decomposição do overhead
-- ⚡ Overhead comunicação + Computação paralela
+## 🧪 Como Testar (Cenários)
 
-## 📚 Estrutura
+Para reproduzir os testes do relatório, siga os passos abaixo.
 
-```
-matmul-distribuida/
-├── src/matmul/
-│   ├── server/main.py          # Servidor coordenador
-│   ├── client/main.py          # Cliente worker
-│   └── utils/
-│       ├── protocol.py         # Comunicação JSON/TCP
-│       └── matrix_utils.py     # Operações com matrizes
-├── save_test_data.py           # Salvar dados de teste
-├── generate_from_file.py       # Gerar gráficos
-└── test_results.json           # Dados salvos
-```
+### Cenário 1: Teste Pequeno (Funcionalidade)
+1.  Inicie o servidor esperando **2 clientes**:
+    `python3 -m matmul.server.main --num-clients 2`
+2.  Quando pedir o tamanho, digite:
+    -   Linhas A: `100`
+    -   Colunas A: `100`
+    -   Colunas B: `100`
+3.  Abra 2 terminais e inicie 2 clientes.
+4.  Observe o tempo total e verifique se o resultado bate com o sequencial.
 
-## 🎓 Para Apresentação
+### Cenário 2: Teste Médio
+1.  Inicie o servidor esperando **3 clientes**:
+    `python3 -m matmul.server.main --num-clients 3`
+2.  Tamanhos: `500` x `500` x `500`.
+3.  Abra 3 terminais e inicie 3 clientes.
 
-1. Execute testes com diferentes tamanhos (500, 1000, 1500)
-2. Salve cada teste com `save_test_data.py`
-3. Gere gráficos com `generate_from_file.py`
-4. Use os PNG nos slides
+### Cenário 3: Stress Test (Matrizes Grandes)
+1.  Inicie o servidor esperando **4 clientes** (ou mais, se tiver máquinas/núcleos disponíveis):
+    `python3 -m matmul.server.main --num-clients 4`
+2.  Tamanhos: `1000` x `1000` x `1000` (ou maior).
+3.  Abra 4 terminais e inicie 4 clientes.
+4.  **Atenção:** O cálculo sequencial pode demorar bastante aqui. O distribuído deve mostrar vantagem se o overhead de rede não for gargalo.
 
-**Veja `GUIA_RAPIDO.md` para roteiro completo!**
+---
+
+## 🛠️ Solução de Problemas
+
+**Erro: `ModuleNotFoundError: No module named 'matmul'`**
+- Certifique-se de que você está executando o comando de dentro da pasta `src`.
+- Use `python -m matmul.server.main` em vez de `python matmul/server/main.py`.
+
+**Erro: `ConnectionRefusedError` no cliente**
+- O servidor não está rodando ou já encerrou. Inicie o servidor primeiro.
+
+**O programa trava**
+- Verifique se você iniciou o número exato de clientes que configurou no `--num-clients`. O servidor espera todos conectarem antes de iniciar.
