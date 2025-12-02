@@ -7,9 +7,25 @@ Este projeto implementa um sistema de multiplicação de matrizes distribuída u
 - Python 3.8 ou superior instalado.
 - Biblioteca `numpy` (opcional, usada apenas para geração de matrizes no utils, mas o código principal usa listas puras para fins didáticos. Se der erro de import, instale).
 
+### Configuração do Ambiente Virtual (Recomendado)
+
+É uma boa prática usar um ambiente virtual para isolar as dependências.
+
+**Linux / macOS:**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+**Windows:**
+```powershell
+python -m venv venv
+.\venv\Scripts\activate
+```
+
 ### Instalação das dependências
 
-Abra o terminal na pasta raiz do projeto e execute:
+Com o ambiente virtual ativado, instale as dependências:
 
 ```bash
 pip install -r requirements.txt

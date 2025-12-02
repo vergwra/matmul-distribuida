@@ -1,6 +1,7 @@
 import socket
 import argparse
 import time
+import struct
 from typing import Tuple
 
 from matmul.utils.matrix_utils import multiply, print_matrix, Matrix
